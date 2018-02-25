@@ -45,8 +45,8 @@ app.use((req, res, next) => {
     next();
 });
 app.use(morgan('dev'));
-app.use(express.static(__dirname + '\\public'));
-app.set('views', __dirname + '\\views');
+app.use(express.static(__dirname + '/public'));
+app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req, res) => {
