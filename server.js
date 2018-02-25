@@ -16,6 +16,7 @@ const { Pool, Client } = require('pg');
     password: 'petar123',
     port: 5432
 });**/
+//var dburl = process.env.DATABASE_URL || "postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd";
 process.env.DATABASE_URL = 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd';
 const client = new Client({
     user: 'dnedcxrd',
@@ -70,7 +71,8 @@ app.get('/home', (req, res) => {
         res.redirect('/patient');
     }
     else {
-        res.render('home.html');
+        console.log(process.env.DATABASE_URL);
+		res.render('home.html');
     }
 });
 
