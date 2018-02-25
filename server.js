@@ -16,6 +16,7 @@ const { Pool, Client } = require('pg');
     password: 'petar123',
     port: 5432
 });**/
+process.env.DATABASE_URL = 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd';
 const client = new Client({
     user: 'dnedcxrd',
     host: 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd',
