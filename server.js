@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var morgan = require('morgan');
+require('dotenv').config();
 
 var Doctor = require('./models/doctor');
 var Patient = require('./models/patient');
@@ -16,8 +17,6 @@ const { Pool, Client } = require('pg');
     password: 'petar123',
     port: 5432
 });**/
-//var dburl = process.env.DATABASE_URL || "postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd";
-process.env.DATABASE_URL = 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd';
 const client = new Client({
     user: 'dnedcxrd',
     host: 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd',
@@ -71,7 +70,6 @@ app.get('/home', (req, res) => {
         res.redirect('/patient');
     }
     else {
-        console.log(process.env.DATABASE_URL);
 		res.render('home.html');
     }
 });
