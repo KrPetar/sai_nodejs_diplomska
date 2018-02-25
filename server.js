@@ -25,7 +25,7 @@ const client = new Client({
 });
 
 var app = express();
-app.set('port', 150);
+app.set('port', 80);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
