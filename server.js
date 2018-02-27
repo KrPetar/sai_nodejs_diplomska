@@ -70,7 +70,8 @@ dbPatientDiagnostics = [
     }
 ];
 var app = express();
-app.set('port', 150);
+var port = process.env.PORT || 8080;
+app.set('port', port);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
