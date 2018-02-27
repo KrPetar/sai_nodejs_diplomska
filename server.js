@@ -3,12 +3,11 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var morgan = require('morgan');
-require('dotenv').config();
 
-var Doctor = require('./models/doctor');
+/**var Doctor = require('./models/doctor');
 var Patient = require('./models/patient');
 var PatientDiagnostic = require('./models/patientDiagnostic');
-const { Pool, Client } = require('pg');
+const { Pool, Client } = require('pg');**/
 
 /**const pool = new Pool({
     user: 'postgres',
@@ -17,17 +16,61 @@ const { Pool, Client } = require('pg');
     password: 'petar123',
     port: 5432
 });**/
-const client = new Client({
+/**const client = new Client({
     user: 'dnedcxrd',
     host: 'postgres://dnedcxrd:nZpIazZQcyvxW5YmOVNH90g82jFWiCtH@horton.elephantsql.com:5432/dnedcxrd',
     database: 'dnedcxrd',
     password: 'nZpIazZQcyvxW5YmOVNH90g82jFWiCtH',
     port: 5432
-});
+});**/
 
+dbDoctor = {
+    doctorId: 1,
+    email: 'kr.petar5@gmail.com',
+    passsword: '12345',
+    firstname: 'Petar',
+    surname: 'Krstevski',
+    ssn: '1012982450080'
+};
+dbPatient = {
+    patientId: 1,
+    doctorId: 1,
+    email: 'stefan.s@gmail.com',
+    passsword: '12345',
+    firstname: 'Stefan',
+    surname: 'Stefanovski',
+    ssn: '0208992450350'
+};
+dbPatients = [
+    {
+        patientId: 1,
+        doctorId: 1,
+        email: 'stefan.s@gmail.com',
+        passsword: '12345',
+        firstname: 'Stefan',
+        surname: 'Stefanovski',
+        ssn: '0208992450350'
+    }
+];
+dbPatientDiagnostics = [
+    {
+        patientDiagnosticId: 1,
+        doctorId: 1,
+        patientId: 1,
+        comment: 'My head hurts!',
+        feedback: 'Take this pills.',
+        patientname: 'Stefan Stefanovski'
+    },
+    {
+        patientDiagnosticId: 2,
+        doctorId: 1,
+        patientId: 1,
+        comment: 'My nose is running!',
+        patientname: 'Stefan Stefanovski'
+    }
+];
 var app = express();
-var port = process.env.PORT || 8080
-app.set('port', port);
+app.set('port', 150);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session({
@@ -46,8 +89,8 @@ app.use((req, res, next) => {
     next();
 });
 app.use(morgan('dev'));
-app.use(express.static(__dirname + '//public'));
-app.set('views', __dirname + '//views');
+app.use(express.static(__dirname + '\\public'));
+app.set('views', __dirname + '\\views');
 app.engine('html', require('ejs').renderFile);
 
 app.get('/', (req, res) => {
@@ -70,7 +113,7 @@ app.get('/home', (req, res) => {
         res.redirect('/patient');
     }
     else {
-		res.render('home.html');
+        res.render('home.html');
     }
 });
 
@@ -90,7 +133,20 @@ app.post('/login', (req, res) => {
     var email = req.body.email;
     var password = req.body.password;
 
-    Doctor.findOne({ where: { email: email, password: password } }).then(function(doctor) {
+    if(email == dbDoctor.email && password == dbDoctor.passsword) {
+        req.session.user = dbDoctor;
+        req.session.doctor = true;
+        res.redirect('/doctor');
+    }
+    else if(email == dbPatient.email && password == dbPatient.passsword) {
+        req.session.user = dbPatient;
+        res.redirect('/patient');
+    }
+    else {
+        res.redirect('/login');
+    }
+    
+    /**Doctor.findOne({ where: { email: email, password: password } }).then(function(doctor) {
         if(!doctor) {
             Patient.findOne({ where: { email: email, password: password } }).then(function(patient) {
                 if(!patient) {
@@ -107,7 +163,7 @@ app.post('/login', (req, res) => {
             req.session.doctor = true;
             res.redirect('/doctor');
         }
-    });
+    });**/
 });
 
 app.get('/doctor', (req, res) => {
@@ -115,7 +171,16 @@ app.get('/doctor', (req, res) => {
         var patientsRes;
         var patientDiagnosticsRes;
 
-        Patient.findAll({ where: { doctorId: Number(req.session.user.doctorId) } }).then(function(patients) {
+        patientsRes = dbPatients;
+        patientDiagnosticsRes = dbPatientDiagnostics;
+
+        res.render('doctor.html', {
+            user: req.session.user,
+            patients: patientsRes,
+            patientDiagnostics: patientDiagnosticsRes
+        });
+
+        /**Patient.findAll({ where: { doctorId: Number(req.session.user.doctorId) } }).then(function(patients) {
             if(patients) {
                 patientsRes = patients;
             }
@@ -137,7 +202,7 @@ app.get('/doctor', (req, res) => {
                     patientDiagnostics: patientDiagnosticsRes
                 });
             });
-        });
+        });**/
     }
     else {
         res.redirect('/login');
@@ -148,7 +213,11 @@ app.post('/sendFeedback', (req, res) => {
     var patientDiagnosticId = Number(req.body.patientDiagnosticId);
     var feedback = req.body.feedback;
 
-    PatientDiagnostic.findOne({ where: { patientDiagnosticId: Number(patientDiagnosticId) } }).then(function(patientDiagnostic) {
+    dbPatientDiagnostics[patientDiagnosticId - 1].feedback = feedback;
+
+    res.redirect('/doctor');
+    
+    /**PatientDiagnostic.findOne({ where: { patientDiagnosticId: Number(patientDiagnosticId) } }).then(function(patientDiagnostic) {
         if(patientDiagnostic) {
             patientDiagnostic.updateAttributes({
                 feedback: feedback
@@ -157,7 +226,7 @@ app.post('/sendFeedback', (req, res) => {
                 res.redirect('/doctor');
             });
         }
-    });
+    });**/
 });
 
 app.get('/patient', (req, res) => {
@@ -165,7 +234,16 @@ app.get('/patient', (req, res) => {
         var doctorRes;
         var patientDiagnosticsRes;
 
-        Doctor.findOne({ where: { doctorId: Number(req.session.user.doctorId) } }).then(function(doctor) {
+        doctorRes = dbDoctor;
+        patientDiagnosticsRes = dbPatientDiagnostics;
+
+        res.render('patient.html', {
+            user: req.session.user,
+            doctor: doctorRes,
+            patientDiagnostics: patientDiagnosticsRes
+        });
+
+        /**Doctor.findOne({ where: { doctorId: Number(req.session.user.doctorId) } }).then(function(doctor) {
             if(doctor) {
                 doctorRes = doctor;
             }
@@ -186,7 +264,7 @@ app.get('/patient', (req, res) => {
                     patientDiagnostics: patientDiagnosticsRes
                 });
             });
-        });
+        });**/
     }
     else {
         res.redirect('/login');
@@ -199,7 +277,17 @@ app.post('/sendDiagnostic', (req, res) => {
     var patientSurname = req.session.user.surname;
     var patientname = patientFirstname + ' ' + patientSurname;
 
-    PatientDiagnostic.create({
+    dbPatientDiagnostics[dbPatientDiagnostics.length] = {
+        patientDiagnosticId: dbPatientDiagnostics.length + 1,
+        doctorId: Number(req.session.user.doctorId),
+        patientId: Number(req.session.user.patientId),
+        comment: comment,
+        patientname: patientname
+    };
+
+    res.redirect('/patient');
+
+    /**PatientDiagnostic.create({
         doctorId: Number(req.session.user.doctorId),
         patientId: Number(req.session.user.patientId),
         comment: comment,
@@ -207,7 +295,7 @@ app.post('/sendDiagnostic', (req, res) => {
     })
     .done(function(err) {
         res.redirect('/patient');
-    });
+    });**/
 });
 
 app.get('/logout', (req, res) => {
