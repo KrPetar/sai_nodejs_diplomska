@@ -115,8 +115,7 @@
                                         <%if (!patientDiagnostics[i].feedback) { %>
                                             <form action="/sendFeedback" method="POST">
                                             <div class="form-group">
-                                                    <label for="patientDiagnosticId">Patient diagnostic id:</label>
-                                                    <input type="text" class="form-control" id="patientDiagnosticId" name="patientDiagnosticId" value="<%= patientDiagnostics[i].patientDiagnosticId %>">
+                                                    <input type="hidden" class="form-control" id="patientDiagnosticId" name="patientDiagnosticId" value="<%= patientDiagnostics[i].patientDiagnosticId %>">
                                                 </div>
                                             <div class="form-group">
                                                     <label for="feedback">Give feedback</label>
